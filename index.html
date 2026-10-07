@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Weather</title>
-  <meta name="description" content="Live weather powered by Open-Meteo.">
+  <meta name="description" content="A fun, live weather app powered by Open-Meteo.">
   <meta name="color-scheme" content="light dark">
   <script>
     // Apply saved theme before paint to avoid a flash.
@@ -13,43 +13,86 @@
       if (t === "light" || t === "dark") document.documentElement.dataset.theme = t;
     } catch (e) {}
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <div class="sky" id="sky" aria-hidden="true"></div>
+  <div class="fx" id="fx" aria-hidden="true"></div>
+
   <main class="app">
     <header class="topbar">
       <div>
         <h1 id="greeting">Hello!</h1>
         <p class="sub" id="greetingSub"></p>
       </div>
-      <div class="theme" role="group" aria-label="Theme">
-        <button data-theme-choice="light" aria-pressed="false">Light</button>
-        <button data-theme-choice="system" aria-pressed="false">System</button>
-        <button data-theme-choice="dark" aria-pressed="false">Dark</button>
+      <div class="controls">
+        <div class="seg" role="group" aria-label="Units">
+          <button data-unit-choice="imperial" aria-pressed="false">°F</button>
+          <button data-unit-choice="metric" aria-pressed="false">°C</button>
+        </div>
+        <div class="seg" role="group" aria-label="Theme">
+          <button data-theme-choice="light" aria-pressed="false">☀️ Light</button>
+          <button data-theme-choice="system" aria-pressed="false">💻 System</button>
+          <button data-theme-choice="dark" aria-pressed="false">🌙 Dark</button>
+        </div>
       </div>
     </header>
 
     <form id="searchForm" class="search" role="search">
       <input id="searchInput" type="search" placeholder="Search a city…" aria-label="Search for a city" autocomplete="off">
       <button type="submit">Search</button>
+      <button type="button" id="locBtn" class="ghost" title="Use my location" aria-label="Use my location">📍</button>
+      <button type="button" id="refreshBtn" class="ghost" title="Refresh" aria-label="Refresh">🔄</button>
       <ul id="results" class="results" hidden></ul>
     </form>
+
+    <div id="favs" class="favs" aria-label="Saved cities"></div>
 
     <p id="status" class="status" role="status">Loading…</p>
 
     <section id="current" class="card current" hidden>
-      <div class="loc"><span id="place"></span><span id="updated" class="muted"></span></div>
+      <div class="loc">
+        <span><span id="place"></span> <button id="favBtn" class="star" aria-label="Save this city" aria-pressed="false">☆</button></span>
+        <span id="updated" class="muted"></span>
+      </div>
       <div class="now">
         <div class="icon" id="icon" aria-hidden="true"></div>
-        <div class="temp"><span id="temp"></span><span class="unit">°F</span></div>
+        <div class="temp"><span id="temp"></span><span class="unit" id="tempUnit">°F</span></div>
       </div>
       <p class="cond" id="cond"></p>
+      <button id="sticker" class="sticker" type="button" aria-label="Tap for a new fun message">
+        <span class="sticker-emoji" id="stickerEmoji"></span>
+        <span id="stickerText"></span>
+      </button>
       <dl class="stats">
         <div><dt>Feels like</dt><dd id="feels"></dd></div>
         <div><dt>Humidity</dt><dd id="humidity"></dd></div>
         <div><dt>Wind</dt><dd id="wind"></dd></div>
         <div><dt>Precip</dt><dd id="precip"></dd></div>
+        <div><dt>UV today</dt><dd id="uv"></dd></div>
+        <div><dt>Sunrise</dt><dd id="sunrise"></dd></div>
+        <div><dt>Sunset</dt><dd id="sunset"></dd></div>
+        <div><dt>Clouds</dt><dd id="clouds"></dd></div>
       </dl>
+    </section>
+
+    <section id="funWrap" class="card" hidden>
+      <h2>Today's vibe</h2>
+      <div class="beach">
+        <div class="beach-top"><span>🏖️ Beach day score</span><strong id="beachScore"></strong></div>
+        <div class="meter"><div id="beachBar"></div></div>
+        <p class="muted" id="beachNote"></p>
+      </div>
+      <div class="wear">
+        <div class="wear-emoji" id="wearEmoji"></div>
+        <div>
+          <strong>What to wear</strong>
+          <p id="wearText"></p>
+        </div>
+      </div>
     </section>
 
     <section id="hourlyWrap" class="card" hidden>
@@ -62,7 +105,7 @@
       <ul id="daily" class="daily"></ul>
     </section>
 
-    <footer class="foot">Data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></footer>
+    <footer class="foot">Made with ☀️ for Aaliyah · Data by <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a></footer>
   </main>
   <script src="app.js"></script>
 </body>
